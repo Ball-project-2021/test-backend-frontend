@@ -8,8 +8,17 @@ from rest_framework.response import Response
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, email, password=None, **extra_fields):
+        first_name = extra_fields.get('first_name')
+        last_name = extra_fields.get('last_name')
+
         if not email:
-            return Response('User must have an email address')
+            raise ValueError('User must have an email address')
+
+        if len(first_name) < 3:
+            raise ValueError('min length is 3 simboles')
+
+        if len(last_name) < 3:
+            raise ValueError('min length is 3 simboles')
 
         email = self.normalize_email(email)
         user = self.model(email=email, **extra_fields)
@@ -38,7 +47,7 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
     objects = UserAccountManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['first_name']
+    REQUIRED_FIELDS = ['first_name', 'last_name']
 
     def get_full_name(self):
         return self.first_name
